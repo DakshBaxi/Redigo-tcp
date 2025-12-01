@@ -241,6 +241,19 @@ func cmdCONFIG(conn net.Conn, s *store.Store, args []string) {
 	fmt.Fprintf(conn, "+OK\r\n")
 }
 
+func cmdDUMPALL(conn net.Conn, s *store.Store, args []string) {
+	if len(args) != 0 {
+		fmt.Fprintf(conn, "-ERR DUMPALL does not take arguments\r\n")
+		return
+	}
+	cmds := s.DumpCommands()
+	for _, line := range cmds {
+		fmt.Fprintf(conn, "%s\r\n", line)
+	}
+	fmt.Fprintf(conn, ".\r\n") // terminator
+}
+
+
 func cmdINFO(conn net.Conn, s *store.Store, args []string) {
 	if len(args) != 0 {
 		fmt.Fprintf(conn, "-ERR INFO does not take arguments\r\n")

@@ -40,6 +40,7 @@ var commands = map[string]CommandFunc{
     "DECR":   cmdDECR,
 	"CONFIG": cmdCONFIG,
 	"INFO":   cmdINFO,
+	"DUMPALL": cmdDUMPALL,
 	"HELP":   cmdHELP,
 	"QUIT":   cmdQUIT,
 }

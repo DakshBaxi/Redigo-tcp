@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -186,6 +187,33 @@ func (s *Store) Keys() []string {
 	}
 	return res
 }
+
+// DumpCommands returns a slice of text commands that reconstruct the DB.
+// This is similar to AOF contents, but generated from current in-memory state.
+func (s *Store) DumpCommands() []string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	cmds := []string{}
+	now := time.Now().Unix()
+
+	for k, e := range s.data {
+		// Skip expired keys
+		if e.ExpiresAt != 0 && now > e.ExpiresAt {
+			continue
+		}
+			if e.ExpiresAt == 0 {
+				cmds = append(cmds, fmt.Sprintf("SET %s %s", k, e.Value))
+			} else {
+				ttl := e.ExpiresAt - now
+				if ttl > 0 {
+					cmds = append(cmds, fmt.Sprintf("SETEX %s %d %s", k, ttl, e.Value))
+				}
+			}	
+}
+return cmds
+}
+
 
 // HelpText returns a small help message for the client.
 func HelpText() string {
