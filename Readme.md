@@ -283,9 +283,7 @@ Contributions are welcome — open an issue or a PR. Keep changes focused, add t
 
 ---
 
-**License**
-
-This project is provided for educational purposes. Add a LICENSE file or adapt licensing as needed for your use.
 
 
 Enjoy exploring RediGo! If you'd like, I can also add unit tests, a CI workflow, or switch the protocol to RESP as a follow-up.
+
