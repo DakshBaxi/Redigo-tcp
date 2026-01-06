@@ -76,7 +76,7 @@ func syncOnce(primaryAddr string, s *store.Store) error {
 		if line == "" {
 			continue
 		}
-		// Ignore welcome banners / prompts from primary
+		
 		if strings.HasPrefix(line, "+OK") || strings.HasPrefix(line, "Supports ") || strings.HasPrefix(line, "Type HELP") || line == ">" {
 			continue
 		}
@@ -86,16 +86,12 @@ func syncOnce(primaryAddr string, s *store.Store) error {
 	// Apply snapshot to local store
 	log.Printf("sync: received %d commands", len(lines))
 
-	// For simplicity, we clear local store by reinitializing it.
-	// (You could add a Reset() method instead.)
+
 	newStore := store.New()
 	for _, cmdLine := range lines {
 		applySnapshotCommand(newStore, cmdLine)
 	}
-
-	// Swap: we don't have a nice atomic swap on store pointer,
-	// so in real design you'd wrap Store with another layer.
-	// For this MVP, we just copy over map content.
+
 	replaceStoreData(s, newStore)
 
 	log.Printf("sync: applied snapshot")
@@ -141,10 +137,8 @@ func parseInt64(sval string) (int64, error) {
 	return n, err
 }
 
-// replaceStoreData copies contents from src to dst (naive but fine for now).
-func replaceStoreData(dst, src *store.Store) {
-	// This is a bit hacky because Store fields are private.
-	// For learning, we can just re-dump from src into dst.
+// replaceStoreData copies contents from src to dst
+func replaceStoreData(dst, src *store.Store) {
 	cmds := src.DumpCommands()
 	for _, line := range cmds {
 		applySnapshotCommand(dst, line)
